@@ -1,0 +1,94 @@
+{
+  "template": "faq",
+  "product": "GlowBoost Vitamin C Serum",
+  "supporting": {
+    "ingredients": [
+      "Vitamin C",
+      "Hyaluronic Acid"
+    ],
+    "how_to_use": "Apply 2–3 drops in the morning before sunscreen",
+    "side_effects": "Mild tingling for sensitive skin"
+  },
+  "qa": [
+    {
+      "q": "What is the full name of the product?",
+      "a": "GlowBoost Vitamin C Serum",
+      "category": "Informational"
+    },
+    {
+      "q": "What is the concentration stated?",
+      "a": "10% Vitamin C",
+      "category": "Informational"
+    },
+    {
+      "q": "Which skin types is GlowBoost Vitamin C Serum suitable for?",
+      "a": "Oily, Combination",
+      "category": "Informational"
+    },
+    {
+      "q": "What are the key ingredients in GlowBoost Vitamin C Serum?",
+      "a": "Vitamin C, Hyaluronic Acid",
+      "category": "Informational"
+    },
+    {
+      "q": "What benefits does GlowBoost Vitamin C Serum claim?",
+      "a": "Brightening, Fades dark spots",
+      "category": "Informational"
+    },
+    {
+      "q": "How should I apply the product?",
+      "a": "Apply 2–3 drops in the morning before sunscreen",
+      "category": "Usage"
+    },
+    {
+      "q": "When during the day should it be used?",
+      "a": "Apply 2–3 drops in the morning before sunscreen",
+      "category": "Usage"
+    },
+    {
+      "q": "How many drops are recommended per application?",
+      "a": "Apply 2–3 drops in the morning before sunscreen",
+      "category": "Usage"
+    },
+    {
+      "q": "Are there any noted side effects?",
+      "a": "Mild tingling for sensitive skin",
+      "category": "Safety"
+    },
+    {
+      "q": "Is tingling expected for sensitive skin?",
+      "a": "Mild tingling for sensitive skin",
+      "category": "Safety"
+    },
+    {
+      "q": "What is the price in INR?",
+      "a": "699 INR",
+      "category": "Purchase"
+    },
+    {
+      "q": "Does the product list include Vitamin C?",
+      "a": "Yes",
+      "category": "Purchase"
+    },
+    {
+      "q": "Does it contain Hyaluronic Acid?",
+      "a": "Yes",
+      "category": "Ingredients"
+    },
+    {
+      "q": "How many key ingredients are listed?",
+      "a": "2",
+      "category": "Ingredients"
+    },
+    {
+      "q": "Is the concentration explicitly 10% Vitamin C?",
+      "a": "10% Vitamin C",
+      "category": "Comparison"
+    },
+    {
+      "q": "Are benefits focused on brightening and fading dark spots?",
+      "a": "Brightening, Fades dark spots",
+      "category": "Comparison"
+    }
+  ]
+}

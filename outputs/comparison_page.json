@@ -1,0 +1,65 @@
+{
+  "template": "comparison_page",
+  "product_a": "GlowBoost Vitamin C Serum",
+  "product_b": "BrightLift Vitamin C Serum",
+  "comparison": {
+    "product_name": {
+      "A": "GlowBoost Vitamin C Serum",
+      "B": "BrightLift Vitamin C Serum",
+      "equal": false
+    },
+    "concentration": {
+      "A": "10% Vitamin C",
+      "B": "10% Vitamin C",
+      "equal": true
+    },
+    "skin_type": {
+      "A": [
+        "Oily",
+        "Combination"
+      ],
+      "B": [
+        "Oily",
+        "Combination"
+      ],
+      "equal": true
+    },
+    "key_ingredients": {
+      "A": [
+        "Vitamin C",
+        "Hyaluronic Acid"
+      ],
+      "B": [
+        "Vitamin C",
+        "Hyaluronic Acid"
+      ],
+      "equal": true
+    },
+    "benefits": {
+      "A": [
+        "Brightening",
+        "Fades dark spots"
+      ],
+      "B": [
+        "Brightening",
+        "Fades dark spots"
+      ],
+      "equal": true
+    },
+    "how_to_use": {
+      "A": "Apply 2–3 drops in the morning before sunscreen",
+      "B": "Apply 2–3 drops in the morning before sunscreen",
+      "equal": true
+    },
+    "side_effects": {
+      "A": "Mild tingling for sensitive skin",
+      "B": "Mild tingling for sensitive skin",
+      "equal": true
+    },
+    "price_inr": {
+      "A": 699,
+      "B": 699,
+      "equal": true
+    }
+  }
+}
