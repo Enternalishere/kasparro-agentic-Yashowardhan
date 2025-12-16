@@ -167,7 +167,7 @@ It reflects the type of **automation-first, system-oriented AI engineering** use
 
 ---
 
-**Built with ❤️ for Applied AI system design.**
+
 
 
 
