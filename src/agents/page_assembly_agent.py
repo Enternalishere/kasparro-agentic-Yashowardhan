@@ -1,4 +1,8 @@
-from typing import Dict, Any
+from typing import Dict, Any, List, Tuple
+import os
+import numpy as np
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_core.messages import HumanMessage
 
 
 class PageAssemblyAgent:
@@ -7,45 +11,43 @@ class PageAssemblyAgent:
         self.templates = templates["templates"]
 
     def build_faq_page(self, product: Dict[str, Any], questions: Dict[str, Any]) -> Dict[str, Any]:
-        tpl = self.templates["faq"]
         items = questions["items"]
         faq_items = []
-        # Use logic blocks to prepare supporting data
         ing = self.logic_blocks["ingredient_summary"](product)
         usage = self.logic_blocks["usage_instructions"](product)
         safety = self.logic_blocks["safety_notes"](product)
-
-        # Produce Q&A strictly from product fields
+        model_name = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+        llm = ChatOpenAI(model=model_name, temperature=0)
+        embedder = OpenAIEmbeddings(model=os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small"))
+        docs: List[Tuple[str, str, str]] = []
+        docs.append(("product_name", product["product_name"], f"Product name: {product['product_name']}"))
+        docs.append(("concentration", product["concentration"], f"Concentration: {product['concentration']}"))
+        docs.append(("skin_type", ", ".join(product["skin_type"]), f"Skin types: {', '.join(product['skin_type'])}"))
+        docs.append(("key_ingredients", ", ".join(product["key_ingredients"]), f"Key ingredients: {', '.join(product['key_ingredients'])}"))
+        docs.append(("benefits", ", ".join(product["benefits"]), f"Benefits: {', '.join(product['benefits'])}"))
+        docs.append(("how_to_use", product["how_to_use"], f"How to use: {product['how_to_use']}"))
+        docs.append(("side_effects", product["side_effects"], f"Side effects: {product['side_effects']}"))
+        docs.append(("price_inr", str(product["price_inr"]), f"Price INR: {product['price_inr']}"))
+        corpus_texts = [t for _, _, t in docs]
+        corpus_vecs = embedder.embed_documents(corpus_texts)
+        corpus = np.array(corpus_vecs)
         for q in items:
-            text = q["question"]
-            tl = text.lower()
-            ans = None
-            # Order checks to avoid accidental matches (e.g., "sensitive skin" vs generic "skin")
-            if "tingling" in tl or "side effect" in tl:
-                ans = product["side_effects"]
-            elif "name" in tl:
-                ans = product["product_name"]
-            elif "10%" in tl or "concentration" in tl:
-                ans = product["concentration"]
-            elif "how many" in tl and "ingredient" in tl:
-                ans = str(len(product["key_ingredients"]))
-            elif "hyaluronic acid" in tl:
-                ans = "Yes" if "Hyaluronic Acid" in product["key_ingredients"] else "No"
-            elif "vitamin c" in tl and "include" in tl:
-                ans = "Yes" if "Vitamin C" in product["key_ingredients"] else "No"
-            elif "ingredient" in tl:
-                ans = ", ".join(product["key_ingredients"]) 
-            elif "benefit" in tl:
-                ans = ", ".join(product["benefits"]) 
-            elif "apply" in tl or "used" in tl or "drops" in tl:
-                ans = product["how_to_use"]
-            elif "skin" in tl:
-                ans = ", ".join(product["skin_type"])
-            elif "price" in tl:
-                ans = str(product["price_inr"]) + " INR"
-            else:
-                ans = "Answerable from product data"
-            faq_items.append({"q": text, "a": ans, "category": q["category"]})
+            qt = q["question"]
+            qv = np.array(embedder.embed_query(qt))
+            sims = corpus @ qv / (np.linalg.norm(corpus, axis=1) * np.linalg.norm(qv) + 1e-8)
+            idx = int(np.argmax(sims))
+            field, value, context = docs[idx]
+            answer_prompt = (
+                "Answer the user's question using only the provided field and value. "
+                "Keep the answer concise and grounded. If a yes/no is implied, answer directly. "
+                "Do not invent facts.\n"
+                f"Question: {qt}\n"
+                f"Field: {field}\n"
+                f"Value: {value}\n"
+            )
+            msg = HumanMessage(content=answer_prompt)
+            ans = llm.invoke([msg]).content.strip()
+            faq_items.append({"q": qt, "a": ans, "category": q["category"], "source_field": field})
 
         return {
             "template": "faq",
