@@ -1,10 +1,12 @@
-from typing import Dict, Any
+from typing import Dict, Any, Union
+import os
+import json
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import HumanMessage
 
 
 class ProductParsingAgent:
-    """Normalizes raw input into a ProductModel JSON structure.
-    No content generation occurs here.
-    """
+    """Normalizes raw input into a ProductModel JSON structure."""
 
     REQUIRED_FIELDS = [
         "product_name",
@@ -17,12 +19,26 @@ class ProductParsingAgent:
         "price_inr",
     ]
 
-    def run(self, raw_data: Dict[str, Any]) -> Dict[str, Any]:
+    def run(self, raw_data: Union[Dict[str, Any], str]) -> Dict[str, Any]:
+        if isinstance(raw_data, str):
+            model_name = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+            llm = ChatOpenAI(model=model_name, temperature=0)
+            prompt = (
+                "Extract a ProductModel JSON from the following unstructured text. "
+                "Keys: product_name, concentration, skin_type (list), key_ingredients (list), benefits (list), "
+                "how_to_use, side_effects, price_inr (integer). Return strict JSON only.\n"
+                f"Text: {raw_data}"
+            )
+            msg = HumanMessage(content=prompt)
+            res = llm.invoke([msg])
+            data = json.loads(res.content)
+        else:
+            data = dict(raw_data)
         model: Dict[str, Any] = {}
         for f in self.REQUIRED_FIELDS:
-            if f not in raw_data:
+            if f not in data:
                 raise ValueError(f"Missing required field: {f}")
-            model[f] = raw_data[f]
+            model[f] = data[f]
 
        
         model["product_name"] = str(model["product_name"]).strip()
