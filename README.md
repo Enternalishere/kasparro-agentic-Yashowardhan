@@ -1,4 +1,4 @@
-Multi-Agent Content Generation System
+**Multi-Agent Content Generation System**
 
 Run the pipeline using:
 
@@ -10,7 +10,7 @@ This repository implements a production-grade multi-agent content generation sys
 This is not a content-writing or UI project.
 It is a systems engineering challenge focused on agent design, orchestration, validation, and execution integrity.
 
-🎯 Problem Statement
+**🎯 Problem Statement**
 
 Most AI-driven content systems rely on monolithic scripts or prompt-only pipelines that are:
 
@@ -30,7 +30,7 @@ Produces validated, machine-readable outputs
 
 Remains extensible, testable, and audit-proof
 
-🧩 Solution Overview
+**🧩 Solution Overview**
 
 This project implements a multi-agent pipeline where:
 
@@ -46,7 +46,7 @@ Pages are assembled via a custom template engine
 
 The pipeline is orchestrated as a typed DAG
 
-Generated Outputs
+**Generated Outputs**
 
 📄 FAQ Page
 
@@ -54,7 +54,7 @@ Generated Outputs
 
 📄 Comparison Page (vs fictional product)
 
-All outputs are pure JSON and suitable for downstream automation.
+**All outputs are pure JSON and suitable for downstream automation.**
 
 🏗️ System Architecture
 🔁 Execution Flow
@@ -79,7 +79,7 @@ Documentation Agent
 
 The pipeline is executed as a DAG, allowing independent agents to be parallelized where applicable.
 
-🤖 Agent Responsibilities
+**🤖 Agent Responsibilities**
 1️⃣ Product Parsing Agent
 
 Normalizes raw input into a strict ProductModel
@@ -239,3 +239,4 @@ Generated via agent orchestration (not static files)
 ❌ Not dependent on external data or assumptions
 
 This project emphasizes system correctness over superficial generation
+
