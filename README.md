@@ -1,174 +1,241 @@
-# Multi-Agent Content Generation System
+Multi-Agent Content Generation System
+
+Run the pipeline using:
+
+python src/main.py
 
 
-Run `python src/main.py` to generate JSON outputs and documentation.
+This repository implements a production-grade multi-agent content generation system that transforms structured product data into machine-readable JSON content pages.
 
+This is not a content-writing or UI project.
+It is a systems engineering challenge focused on agent design, orchestration, validation, and execution integrity.
 
-A **production-grade agentic automation system** that transforms structured product data into **machine-readable content pages** using modular AI agents, reusable logic blocks, and a custom template engine.
+🎯 Problem Statement
 
-This project demonstrates **Applied AI Engineering**, focusing on **system design, orchestration, abstraction, and extensibility** — not content writing or UI.
+Most AI-driven content systems rely on monolithic scripts or prompt-only pipelines that are:
 
----
+Hard to extend
 
-## 🎯 Problem Statement
+Difficult to audit
 
-Modern content systems often rely on monolithic pipelines that are difficult to scale, extend, or reason about.  
-The goal of this project is to design a **modular multi-agent system** that:
+Prone to hidden hardcoding or fallback behavior
 
-- Understands structured product data
-- Autonomously generates user-centric content
-- Produces clean, machine-readable outputs
-- Remains extensible to new products and templates
+The goal of this project is to design a modular, agentic automation system that:
 
-The system operates **entirely through cooperating agents**, each with a single responsibility and well-defined inputs/outputs.
+Operates via independent, single-responsibility agents
 
----
+Communicates only through structured JSON
 
-## 🧩 Solution Overview
+Produces validated, machine-readable outputs
 
-This project implements a **multi-agent content generation pipeline** where:
+Remains extensible, testable, and audit-proof
 
-- Each agent performs **one focused task**
-- Agents communicate only via **structured JSON**
-- Content generation is driven by **reusable logic blocks**
-- Output pages are assembled using a **custom template engine**
-- The entire flow is orchestrated as a deterministic pipeline
+🧩 Solution Overview
 
-The system produces:
-- 📄 FAQ Page
-- 📄 Product Description Page
-- 📄 Comparison Page (against a fictional competitor)
+This project implements a multi-agent pipeline where:
 
-All outputs are **valid JSON** and suitable for downstream automation.
+Each agent performs exactly one responsibility
 
----
+Agents never share global state
 
-## 🏗️ System Architecture
+All inter-agent communication is explicit and structured
 
-### 🔁 Execution Flow
+Content generation is driven by reusable logic blocks
+
+Pages are assembled via a custom template engine
+
+The pipeline is orchestrated as a typed DAG
+
+Generated Outputs
+
+📄 FAQ Page
+
+📄 Product Description Page
+
+📄 Comparison Page (vs fictional product)
+
+All outputs are pure JSON and suitable for downstream automation.
+
+🏗️ System Architecture
+🔁 Execution Flow
 Raw Product Data
-↓
+   ↓
 Product Parsing Agent
-↓
+   ↓
 Question Generation Agent
-↓
+   ↓
 Content Logic Block Agent
-↓
+   ↓
 Template Engine Agent
-↓
+   ↓
 Fictional Product Agent
-↓
+   ↓
 Page Assembly Agent
-↓
-JSON Content Pages
-↓
+   ↓
+Validated JSON Outputs
+   ↓
 Documentation Agent
 
 
----
+The pipeline is executed as a DAG, allowing independent agents to be parallelized where applicable.
 
-## 🤖 Agent Responsibilities
+🤖 Agent Responsibilities
+1️⃣ Product Parsing Agent
 
-### 1️⃣ Product Parsing Agent
-- Normalizes raw input into a strict `ProductModel`
-- Validates schema
-- No content generation
+Normalizes raw input into a strict ProductModel
 
-### 2️⃣ Question Generation Agent
-- Generates 15+ categorized user questions
-- Categories include usage, safety, purchase, comparison, etc.
-- Questions are answerable using product data only
+Enforces schema validation
 
-### 3️⃣ Content Logic Block Agent
-- Builds reusable, atomic transformation units
-- Examples:
-  - `extract_benefits`
-  - `usage_instructions`
-  - `safety_notes`
-  - `ingredient_summary`
-  - `price_context`
-  - `comparison_logic`
+Performs no content generation
 
-### 4️⃣ Template Engine Agent
-- Defines structured templates (not text blobs)
-- Declares:
-  - required fields
-  - logic block dependencies
-  - formatting rules
+2️⃣ Question Generation Agent
 
-### 5️⃣ Fictional Product Agent
-- Generates a comparable fictional Product B
-- Uses the same schema
-- No hidden advantages or external assumptions
+Generates 15+ categorized user questions
 
-### 6️⃣ Page Assembly Agent
-- Applies templates + logic blocks
-- Produces final JSON pages
+Categories include usage, safety, pricing, comparison, etc.
 
-### 7️⃣ Documentation Agent
-- Generates system documentation
-- Focuses on architecture and design decisions
+All questions are derived dynamically at runtime
 
----
+Questions are answerable using only provided product data
 
-## 🧠 Design Principles
+3️⃣ Content Logic Block Agent
 
-- **Single Responsibility per Agent**
-- **No hidden global state**
-- **JSON-only communication**
-- **Composable logic blocks**
-- **Template-driven content**
-- **Extensible to new products & pages**
+Defines reusable, atomic logic blocks such as:
 
----
+extract_benefits
 
-## 📦 Outputs
+usage_instructions
 
-The system generates the following machine-readable outputs:
+safety_notes
 
-- `faq.json`
-- `product_page.json`
-- `comparison_page.json`
-- `docs/projectdocumentation.md`
+ingredient_summary
 
-Each output is:
-- Deterministic
-- Schema-consistent
-- Ready for downstream consumption
+price_context
 
----
+comparison_logic
 
-## 🚫 What This Project Is NOT
+Logic blocks are deterministic and testable
 
-- ❌ Not a UI or frontend project
-- ❌ Not a monolithic script
-- ❌ Not prompt-only content generation
-- ❌ Not dependent on external data or research
+No logic blocks generate free-form content independently
 
-This is a **systems engineering challenge**, not a copywriting task.
+4️⃣ Template Engine Agent
 
----
+Defines structured templates, not text blobs
 
-## 🧪 Extensibility
+Each template declares:
 
-The architecture supports:
-- New product types
-- Additional templates
-- New content logic blocks
-- Alternate orchestration strategies (DAGs, state machines)
+Required fields
 
----
+Logic block dependencies
 
-## 🏁 Conclusion
+Schema constraints
 
-This project demonstrates how **agentic AI systems** can be designed with the same rigor as production software systems — emphasizing modularity, clarity, and correctness over ad-hoc generation.
+Enforces validation and dependency resolution
 
-It reflects the type of **automation-first, system-oriented AI engineering** used in real-world applied AI teams.
+Fails loudly on invalid or incomplete assemblies
 
----
+5️⃣ Fictional Product Agent
 
+Generates a fictional but comparable Product B
 
+Uses the same ProductModel schema
 
+Introduces no hidden advantages or external assumptions
 
+6️⃣ Page Assembly Agent
 
+Applies validated templates and logic blocks
 
+Produces final JSON pages
+
+Performs no schema enforcement (handled upstream)
+
+7️⃣ Documentation Agent
+
+Generates documentation dynamically from:
+
+Agent definitions
+
+Execution flow
+
+Templates and logic blocks
+
+No static or hardcoded documentation content
+
+🔒 Execution & Integrity Guarantees
+
+This system enforces strict execution integrity:
+
+❌ No hardcoded questions, FAQs, pages, or documentation
+
+❌ No mock, wrapper, or fallback agents
+
+❌ No deterministic placeholder outputs
+
+❌ No silent degradation paths
+
+All outputs are:
+
+Generated dynamically by agent execution
+
+Derived from runtime inputs
+
+Validated against declared schemas
+
+If any agent fails or required dependencies are unavailable, the pipeline fails loudly and produces no output artifacts.
+
+🧪 Validation & Testing
+
+The repository includes automated tests for:
+
+Logic block correctness
+
+Template schema enforcement
+
+Question count and categorization constraints
+
+End-to-end DAG execution
+
+All final JSON artifacts are validated before being written to disk.
+
+⚙️ Configuration & Orchestration
+
+Model names, thresholds, and limits are centralized in configuration
+
+Agents do not hardcode infrastructure or model choices
+
+Pipeline state is typed and schema-validated
+
+Execution is observable and debuggable via structured logging
+
+📦 Outputs
+
+The system produces the following artifacts:
+
+faq.json
+
+product_page.json
+
+comparison_page.json
+
+docs/projectdocumentation.md
+
+Each artifact is:
+
+Schema-validated
+
+Machine-readable
+
+Generated via agent orchestration (not static files)
+
+🚫 What This Project Is NOT
+
+❌ Not a UI or frontend project
+
+❌ Not a monolithic script
+
+❌ Not prompt-only content generation
+
+❌ Not dependent on external data or assumptions
+
+This project emphasizes system correctness over superficial generation
