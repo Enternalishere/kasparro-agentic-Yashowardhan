@@ -1,14 +1,12 @@
 from typing import Dict, Any, List, Tuple
-import os
-import numpy as np
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from langchain_core.messages import HumanMessage
+from local_llm import LocalLLMProvider
 
 
 class PageAssemblyAgent:
     def __init__(self, logic_blocks: Dict[str, Any], templates: Dict[str, Any]):
         self.logic_blocks = logic_blocks["impl"]
         self.templates = templates["templates"]
+        self._corpus_cache: Dict[str, Tuple[List[Tuple[str, str, str]], np.ndarray]] = {}
 
     def build_faq_page(self, product: Dict[str, Any], questions: Dict[str, Any]) -> Dict[str, Any]:
         items = questions["items"]
@@ -16,9 +14,7 @@ class PageAssemblyAgent:
         ing = self.logic_blocks["ingredient_summary"](product)
         usage = self.logic_blocks["usage_instructions"](product)
         safety = self.logic_blocks["safety_notes"](product)
-        model_name = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
-        llm = ChatOpenAI(model=model_name, temperature=0)
-        embedder = OpenAIEmbeddings(model=os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small"))
+        llm = LocalLLMProvider()
         docs: List[Tuple[str, str, str]] = []
         docs.append(("product_name", product["product_name"], f"Product name: {product['product_name']}"))
         docs.append(("concentration", product["concentration"], f"Concentration: {product['concentration']}"))
@@ -28,15 +24,18 @@ class PageAssemblyAgent:
         docs.append(("how_to_use", product["how_to_use"], f"How to use: {product['how_to_use']}"))
         docs.append(("side_effects", product["side_effects"], f"Side effects: {product['side_effects']}"))
         docs.append(("price_inr", str(product["price_inr"]), f"Price INR: {product['price_inr']}"))
-        corpus_texts = [t for _, _, t in docs]
-        corpus_vecs = embedder.embed_documents(corpus_texts)
-        corpus = np.array(corpus_vecs)
         for q in items:
             qt = q["question"]
-            qv = np.array(embedder.embed_query(qt))
-            sims = corpus @ qv / (np.linalg.norm(corpus, axis=1) * np.linalg.norm(qv) + 1e-8)
-            idx = int(np.argmax(sims))
-            field, value, context = docs[idx]
+            selection_prompt = (
+                "Choose the most relevant field to answer the question from the provided list. "
+                "Return JSON with keys 'field' and 'answer'. Use only provided values.\n"
+                f"Fields: {json.dumps([{f:v} for f, v, _ in docs], ensure_ascii=False)}\n"
+                f"Question: {qt}"
+            )
+            text = llm.chat_json(selection_prompt)
+            data = llm.ensure_json(text)
+            field = data.get("field", docs[0][0])
+            value = data.get("answer", "")
             answer_prompt = (
                 "Answer the user's question using only the provided field and value. "
                 "Keep the answer concise and grounded. If a yes/no is implied, answer directly. "
@@ -45,8 +44,7 @@ class PageAssemblyAgent:
                 f"Field: {field}\n"
                 f"Value: {value}\n"
             )
-            msg = HumanMessage(content=answer_prompt)
-            ans = llm.invoke([msg]).content.strip()
+            ans = llm.chat_json(answer_prompt).strip()
             faq_items.append({"q": qt, "a": ans, "category": q["category"], "source_field": field})
 
         return {
@@ -57,7 +55,7 @@ class PageAssemblyAgent:
         }
 
     def build_product_page(self, product: Dict[str, Any]) -> Dict[str, Any]:
-        tpl = self.templates["product_page"]
+        spec = self.templates["product_page"]
         blocks = {
             **self.logic_blocks["extract_benefits"](product),
             **self.logic_blocks["ingredient_summary"](product),
@@ -82,6 +80,7 @@ class PageAssemblyAgent:
         }
 
     def build_comparison_page(self, a: Dict[str, Any], b: Dict[str, Any]) -> Dict[str, Any]:
+        spec = self.templates["comparison_page"]
         comparison = self.logic_blocks["comparison_logic"](a, b)
         return {
             "template": "comparison_page",

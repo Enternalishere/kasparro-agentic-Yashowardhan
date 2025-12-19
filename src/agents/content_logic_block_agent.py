@@ -1,4 +1,4 @@
-from typing import Dict, Any, Callable
+from typing import Dict, Any, Callable, List
 
 
 class ContentLogicBlockAgent:
@@ -50,3 +50,10 @@ class ContentLogicBlockAgent:
             "blocks": list(registry.keys()),
             "impl": registry,
         }
+
+    def block_ids(self) -> List[str]:
+        data = self.run()
+        return data["blocks"]
+
+    def get_impl(self) -> Dict[str, Callable[..., Any]]:
+        return self.run()["impl"]
